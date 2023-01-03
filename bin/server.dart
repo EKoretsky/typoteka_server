@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:args/command_runner.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
+
+import '../src/cli/version_command.dart';
 
 // Configure routes.
 final _router = Router()
@@ -19,6 +22,21 @@ Response _echoHandler(Request request) {
 }
 
 void main(List<String> args) async {
+  final runner = CommandRunner('dart run', 'How usage this cli');
+
+  runner.addCommand(VersionCommand());
+
+  final result = runner.parse(args);
+
+  if (result.wasParsed('help')) {
+    runner.printUsage();
+    exit(0);
+  }
+
+  runner.runCommand(result);
+
+  // runner.run(res.options);
+
   // Use any available host or container IP (usually `0.0.0.0`).
   final ip = InternetAddress.anyIPv4;
 
